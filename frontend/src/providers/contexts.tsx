@@ -1,0 +1,26 @@
+import type { Todo } from "@/types";
+import { createContext } from "react";
+import { type Session } from "@supabase/supabase-js";
+
+export interface RootContextType {
+    todos: Todo[];
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+    addTodo: (todo: Todo) => void;
+    deleteTodo: (id: string) => void;
+    updateTodo: (id: string, updatedTodo: Todo) => void;
+    toggleTodo: (id: string) => void;
+    newTodoText: string;
+    setNewTodoText: React.Dispatch<React.SetStateAction<string>>;
+}
+
+
+export const RootContext = createContext<RootContextType | null>(null);
+
+export interface SessionContextType {
+    session: Session | null;
+    setSession: (session: Session | null) => void;
+    signInWithGoogle: () => void;
+    signOut: () => void;
+}
+
+export const SessionContext = createContext<SessionContextType | null>(null);

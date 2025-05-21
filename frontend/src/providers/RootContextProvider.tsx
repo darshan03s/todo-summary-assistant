@@ -1,50 +1,67 @@
 import type { Todo } from "@/types";
-import { createContext, useContext, useState } from "react";
-
-interface RootContextType {
-    todos: Todo[];
-    addTodo: (todo: Todo) => void;
-    deleteTodo: (id: number) => void;
-    updateTodo: (id: number, updatedTodo: Todo) => void;
-    toggleTodo: (id: number) => void;
-}
-
-const RootContext = createContext<RootContextType | null>(null);
+import { useState } from "react";
+import { RootContext } from "./contexts";
+import supabaseClient from "@/supabaseClient";
+import { useSessionContext } from "@/hooks/contextHooks";
 
 const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [todos, setTodos] = useState<Todo[]>([]);
+    const { session } = useSessionContext();
+    const [newTodoText, setNewTodoText] = useState<string>('');
 
     const addTodo = (todo: Todo) => {
-        setTodos([...todos, todo]);
+        if (!session) return;
+        supabaseClient
+            .from('user_todos')
+            .insert({
+                user_id: session.user.id,
+                todo_id: todo.todo_id,
+                title: todo.title,
+                completed: todo.completed,
+            })
+            .select()
+            .single()
+            .then(({ data, error }) => {
+                if (error) {
+                    console.error('Error adding todo:', error);
+                    return;
+                }
+                if (data) {
+                    setTodos((prevTodos) => [data, ...prevTodos]);
+                }
+            });
     };
 
-    const deleteTodo = (id: number) => {
-        setTodos(todos.filter((todo) => todo.id !== id));
+    const deleteTodo = (id: string) => {
+        if (!session) return;
+        supabaseClient
+            .from('user_todos')
+            .delete()
+            .eq('todo_id', id)
+            .then(({ error }) => {
+                if (error) {
+                    console.error('Error deleting todo:', error);
+                    return;
+                }
+                setTodos(todos.filter((todo) => todo.todo_id !== id));
+            });
     };
 
-    const updateTodo = (id: number, updatedTodo: Todo) => {
-        setTodos(todos.map((todo) => (todo.id === id ? updatedTodo : todo)));
+    const updateTodo = (id: string, updatedTodo: Todo) => {
+        setTodos(todos.map((todo) => (todo.todo_id === id ? updatedTodo : todo)));
     };
 
-    const toggleTodo = (id: number) => {
+    const toggleTodo = (id: string) => {
         setTodos(todos.map(todo =>
-            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            todo.todo_id === id ? { ...todo, completed: !todo.completed } : todo
         ));
     };
 
     return (
-        <RootContext.Provider value={{ todos, addTodo, deleteTodo, updateTodo, toggleTodo }}>
+        <RootContext.Provider value={{ todos, setTodos, addTodo, deleteTodo, updateTodo, toggleTodo, newTodoText, setNewTodoText }}>
             {children}
         </RootContext.Provider>
     );
-};
-
-export const useRootContext = () => {
-    const context = useContext(RootContext);
-    if (!context) {
-        throw new Error("useRootContext must be used within a RootContextProvider");
-    }
-    return context;
 };
 
 export default RootContextProvider;

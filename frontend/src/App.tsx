@@ -4,17 +4,22 @@ import Home from "./pages/Home"
 import Navbar from "./custon-components/Navbar"
 import RootContextProvider from "./providers/RootContextProvider"
 import { Toaster } from "@/components/ui/sonner"
+import SessionProvider from "./providers/SessionProvider"
 
 const App = () => {
+
+
   return (
     <>
-      <Navbar />
-      <RootContextProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
-        </Routes>
-      </RootContextProvider>
+      <SessionProvider>
+        <Navbar />
+        <RootContextProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+          </Routes>
+        </RootContextProvider>
+      </SessionProvider>
       <Toaster />
     </>
   )

@@ -1,20 +1,23 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Plus, Send } from 'lucide-react'
-import { useState } from 'react'
 import { type Todo } from '@/types'
-import { useRootContext } from '@/providers/RootContextProvider'
+import { useRootContext, useSessionContext } from '@/hooks/contextHooks'
 import { toast } from 'sonner'
+import { v4 as uuidv4 } from 'uuid';
 
 const AddTodo = () => {
-    const [newTodoText, setNewTodoText] = useState<string>('');
-    const { addTodo } = useRootContext();
+    const { newTodoText, setNewTodoText, addTodo } = useRootContext();
+    const { session } = useSessionContext();
 
     const handleAddTodo = () => {
-        toast("Todo added successfully!");
+        if (!session) {
+            toast("You must be logged in to add a todo!");
+            return;
+        }
         if (newTodoText.trim() !== '') {
             addTodo({
-                id: Date.now(),
+                todo_id: uuidv4(),
                 title: newTodoText.trim(),
                 completed: false,
             } as Todo);
