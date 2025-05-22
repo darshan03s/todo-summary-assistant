@@ -51,12 +51,13 @@ const Todos = () => {
 
                         <div className="flex-1 min-w-0">
                             <h3
-                                className={`text-sm font-medium ${todo.completed
+                                className={`text-sm font-medium line-clamp-2 ${todo.completed
                                     ? 'text-amber-700/70 line-through'
                                     : 'text-amber-900'}`}
                             >
                                 {todo.title}
                             </h3>
+                            <p className="text-xs text-amber-500">{new Date(todo.created_at).toLocaleString()}</p>
                         </div>
 
                         <button

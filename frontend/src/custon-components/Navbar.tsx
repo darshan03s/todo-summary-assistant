@@ -2,18 +2,11 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Link } from "react-router"
 import { useSessionContext } from "@/hooks/contextHooks"
-import { useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut } from "lucide-react"
 
 const Navbar = () => {
     const { signInWithGoogle, session, signOut } = useSessionContext();
-
-    useEffect(() => {
-        if (session) {
-            if (import.meta.env.DEV) console.log("Session:", session);
-        }
-    }, [session])
     return (
         <>
             <nav className="bg-amber-100 h-12 flex justify-between items-center px-4 border-b border-amber-200">

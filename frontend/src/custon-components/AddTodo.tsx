@@ -5,10 +5,14 @@ import { type Todo } from '@/types'
 import { useRootContext, useSessionContext } from '@/hooks/contextHooks'
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from 'uuid';
+import { useState } from 'react'
+import Spinner from '@/custon-components/Spinner'
+import { parseTodos, summarizeTodos } from '@/utils'
 
 const AddTodo = () => {
-    const { newTodoText, setNewTodoText, addTodo, updateMode, updateTodo } = useRootContext();
+    const { newTodoText, setNewTodoText, addTodo, updateMode, updateTodo, todos } = useRootContext();
     const { session } = useSessionContext();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleAddTodo = () => {
         if (!session) {
@@ -23,6 +27,18 @@ const AddTodo = () => {
             } as Todo);
             setNewTodoText('');
         }
+    };
+
+    const handleSummarize = async () => {
+        if (!session) {
+            toast("You must be logged in to summarize a todos!");
+            return;
+        }
+        setLoading(true);
+        const allTodos: string = parseTodos(todos);
+        const summary: string = await summarizeTodos(allTodos);
+        toast(summary);
+        setLoading(false);
     };
 
     return (
@@ -43,8 +59,14 @@ const AddTodo = () => {
                         <Plus />
                     </Button>
                 )}
-                <Button variant="default" className={cn("bg-amber-600 hover:bg-amber-700 cursor-pointer rounded-full flex items-center gap-2")}>
-                    <Send /> Summarize
+
+                <Button
+                    variant="default"
+                    className={cn("bg-amber-600 hover:bg-amber-700 cursor-pointer rounded-full flex items-center gap-2")}
+                    onClick={handleSummarize}
+                >
+                    {loading ? <Spinner /> : <Send />}
+                    Summarize
                 </Button>
             </div>
         </div>
