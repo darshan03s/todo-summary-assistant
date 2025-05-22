@@ -5,7 +5,7 @@ import { type Session } from "@supabase/supabase-js";
 export interface RootContextType {
     todos: Todo[];
     setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-    addTodo: (todo: Todo) => void;
+    addTodo: (todo: Todo) => Promise<void>;
     deleteTodo: (id: string) => void;
     updateTodo: () => void;
     toggleTodo: (id: string) => void;

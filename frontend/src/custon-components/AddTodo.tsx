@@ -12,20 +12,24 @@ import { parseTodos, summarizeTodos } from '@/utils'
 const AddTodo = () => {
     const { newTodoText, setNewTodoText, addTodo, updateMode, updateTodo, todos } = useRootContext();
     const { session } = useSessionContext();
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loadingSummarize, setLoadingSummarize] = useState<boolean>(false);
+    const [loadingAddTodo, setLoadingAddTodo] = useState<boolean>(false);
+    const [loadingUpdateTodo, setLoadingUpdateTodo] = useState<boolean>(false);
 
-    const handleAddTodo = () => {
+    const handleAddTodo = async () => {
         if (!session) {
             toast("You must be logged in to add a todo!");
             return;
         }
         if (newTodoText.trim() !== '') {
-            addTodo({
+            setLoadingAddTodo(true);
+            await addTodo({
                 todo_id: uuidv4(),
                 title: newTodoText.trim(),
                 completed: false,
             } as Todo);
             setNewTodoText('');
+            setLoadingAddTodo(false);
         }
     };
 
@@ -34,12 +38,22 @@ const AddTodo = () => {
             toast("You must be logged in to summarize a todos!");
             return;
         }
-        setLoading(true);
+        setLoadingSummarize(true);
         const allTodos: string = parseTodos(todos);
         const summary: string = await summarizeTodos(allTodos);
         toast(summary);
-        setLoading(false);
+        setLoadingSummarize(false);
     };
+
+    const handleUpdateTodo = async () => {
+        if (!session) {
+            toast("You must be logged in to update a todo!");
+            return;
+        }
+        setLoadingUpdateTodo(true);
+        await updateTodo();
+        setLoadingUpdateTodo(false);
+    }
 
     return (
         <div className='border border-amber-600 rounded-lg flex flex-col w-full h-[150px] p-2 justify-between gap-2'>
@@ -48,15 +62,15 @@ const AddTodo = () => {
             <div className="actions flex justify-between items-center">
                 {updateMode ? (
                     <Button variant="default" className={cn("bg-amber-600 hover:bg-amber-700 cursor-pointer rounded-full")}
-                        onClick={updateTodo}
+                        onClick={handleUpdateTodo}
                     >
-                        <Edit />
+                        {loadingUpdateTodo ? <Spinner /> : <Edit />}
                     </Button>
                 ) : (
                     <Button variant="default" className={cn("bg-amber-600 hover:bg-amber-700 cursor-pointer rounded-full")}
                         onClick={handleAddTodo}
                     >
-                        <Plus />
+                        {loadingAddTodo ? <Spinner /> : <Plus />}
                     </Button>
                 )}
 
@@ -65,7 +79,7 @@ const AddTodo = () => {
                     className={cn("bg-amber-600 hover:bg-amber-700 cursor-pointer rounded-full flex items-center gap-2")}
                     onClick={handleSummarize}
                 >
-                    {loading ? <Spinner /> : <Send />}
+                    {loadingSummarize ? <Spinner /> : <Send />}
                     Summarize
                 </Button>
             </div>

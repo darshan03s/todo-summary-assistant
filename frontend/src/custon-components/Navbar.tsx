@@ -10,7 +10,7 @@ const Navbar = () => {
     return (
         <>
             <nav className="bg-amber-100 h-12 flex justify-between items-center px-4 border-b border-amber-200">
-                <Link to="/" className="text-2xl font-bold text-amber-600">Todo Summarizer</Link>
+                <Link to="/" className="text-2xl font-bold text-amber-600">Todo Summary Assistant</Link>
                 <div>
                     {session
                         ?
