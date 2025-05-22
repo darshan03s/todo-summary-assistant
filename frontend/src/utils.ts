@@ -1,4 +1,4 @@
-import type { Todo } from "./types";
+import type { SlackResponseType, Todo } from "./types";
 
 export const parseTodos = (todos: Todo[]): string => {
     let parsedTodosString = '';
@@ -14,7 +14,7 @@ export const parseTodos = (todos: Todo[]): string => {
     return parsedTodosString;
 };
 
-export const summarizeTodos = async (parsedTodosString: string): Promise<string> => {
+export const summarizeTodos = async (parsedTodosString: string): Promise<{ summary: string; slackResponse: SlackResponseType }> => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/summarize`, {
         method: 'POST',
         headers: {
@@ -22,6 +22,6 @@ export const summarizeTodos = async (parsedTodosString: string): Promise<string>
         },
         body: JSON.stringify({ todos: parsedTodosString }),
     });
-    const data: { summary: string } = await response.json();
-    return data.summary;
+    const data: { summary: string; slackResponse: SlackResponseType } = await response.json();
+    return data;
 };

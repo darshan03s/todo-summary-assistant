@@ -4,9 +4,20 @@ import { Link } from "react-router"
 import { useSessionContext } from "@/hooks/contextHooks"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut } from "lucide-react"
+import Spinner from "./Spinner"
+import { useState } from "react"
 
 const Navbar = () => {
     const { signInWithGoogle, session, signOut } = useSessionContext();
+
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const handleLogout = async () => {
+        setLoading(true);
+        await signOut();
+        setLoading(false);
+    }
+
     return (
         <>
             <nav className="bg-amber-100 h-12 flex justify-between items-center px-4 border-b border-amber-200">
@@ -23,10 +34,10 @@ const Navbar = () => {
 
                             <Button className={cn("bg-amber-600 hover:bg-amber-700 rounded-full cursor-pointer")}
                                 onClick={() => {
-                                    signOut()
+                                    handleLogout()
                                 }}
                             >
-                                <LogOut />
+                                {loading ? <Spinner className="text-white" /> : <LogOut />}
                             </Button>
                         </div>
                         :

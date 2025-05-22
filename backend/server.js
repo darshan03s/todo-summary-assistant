@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { summarizeTodos } from './utils.js';
+import { sendSlackMessage, summarizeTodos } from './utils.js';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
@@ -10,8 +10,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment variables.');
+const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+if (!supabaseUrl || !supabaseServiceRoleKey || !slackWebhookUrl) {
+    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY or SLACK_WEBHOOK_URL in environment variables.');
     process.exit(1);
 }
 const supabaseBackend = createClient(supabaseUrl, supabaseServiceRoleKey);
@@ -192,8 +193,10 @@ app.put('/api/toggle-todo', authenticateToken, async (req, res) => {
 
 app.post('/api/summarize', async (req, res) => {
     const { todos } = req.body;
-    const summary = await summarizeTodos(todos);
-    res.json({ summary });
+    let summary = await summarizeTodos(todos);
+    summary = `Todos Summarized at ${new Date().toLocaleString()}\n\n ${summary}`;
+    const slackResponse = await sendSlackMessage(summary, slackWebhookUrl);
+    res.json({ summary, slackResponse });
 });
 
 app.listen(PORT, () => {

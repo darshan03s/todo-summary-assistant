@@ -11,6 +11,11 @@
   display: none;
 }
 
+button,
+a {
+  cursor: pointer;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

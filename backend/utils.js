@@ -15,3 +15,29 @@ export const summarizeTodos = async (todos) => {
     });
     return response.text;
 }
+
+export const sendSlackMessage = async (payload, slackWebhookUrl) => {
+    try {
+        const response = await fetch(slackWebhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: payload
+            })
+        });
+
+        if (response.ok) {
+            console.log('Message sent to Slack successfully!');
+            return { message: 'Message sent to Slack successfully!', error: null };
+        } else {
+            const errorText = await response.text();
+            console.error('Failed to send message to Slack:', response.status, errorText);
+            return { message: 'Failed to send message to Slack.', error: errorText };
+        }
+    } catch (error) {
+        console.error('An error occurred while sending to Slack:', error);
+        return { message: 'An error occurred while sending to Slack.', error: error.message };
+    }
+}

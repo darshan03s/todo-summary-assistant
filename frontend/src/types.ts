@@ -4,3 +4,8 @@ export interface Todo {
     completed: boolean;
     created_at: string;
 }
+
+export type SlackResponseType = {
+    message: string;
+    error?: string;
+}

@@ -23,8 +23,8 @@ export const RootContext = createContext<RootContextType | null>(null);
 export interface SessionContextType {
     session: Session | null;
     setSession: (session: Session | null) => void;
-    signInWithGoogle: () => void;
-    signOut: () => void;
+    signInWithGoogle: () => Promise<void>;
+    signOut: () => Promise<void>;
 }
 
 export const SessionContext = createContext<SessionContextType | null>(null);

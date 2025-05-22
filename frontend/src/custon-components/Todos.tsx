@@ -11,6 +11,7 @@ const Todos = () => {
     const { session } = useSessionContext();
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingTodoId, setLoadingTodoId] = useState<string | null>(null);
+    const [deletingTodoId, setDeletingTodoId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!session) return;
@@ -64,6 +65,13 @@ const Todos = () => {
         setLoadingTodoId(null);
     }
 
+    const handleDeleteTodo = async (id: string) => {
+        if (deletingTodoId === id) return;
+        setDeletingTodoId(id);
+        await deleteTodo(id);
+        setDeletingTodoId(null);
+    }
+
 
     return (
         <div className="space-y-3 overflow-y-auto h-[calc(100vh-300px)] hide-scrollbar">
@@ -110,12 +118,12 @@ const Todos = () => {
                             <Edit size={16} />
                         </button>
                         <button
-                            onClick={() => deleteTodo(todo.todo_id)}
+                            onClick={() => handleDeleteTodo(todo.todo_id)}
                             className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 -mr-1 
                 text-amber-400 hover:text-amber-600"
                             aria-label="Delete todo"
                         >
-                            <Trash2 size={16} />
+                            {deletingTodoId === todo.todo_id ? <Spinner className="text-amber-600 size-5" /> : <Trash2 size={16} />}
                         </button>
                     </div>
                 </div>
