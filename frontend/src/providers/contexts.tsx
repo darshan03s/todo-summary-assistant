@@ -6,9 +6,9 @@ export interface RootContextType {
     todos: Todo[];
     setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
     addTodo: (todo: Todo) => Promise<void>;
-    deleteTodo: (id: string) => void;
-    updateTodo: () => void;
-    toggleTodo: (id: string) => void;
+    deleteTodo: (id: string) => Promise<void>;
+    updateTodo: () => Promise<void>;
+    toggleTodo: (id: string) => Promise<void>;
     newTodoText: string;
     setNewTodoText: React.Dispatch<React.SetStateAction<string>>;
     updateMode: boolean;

@@ -10,6 +10,7 @@ const Todos = () => {
     const { todos, toggleTodo, deleteTodo, setTodos, setNewTodoText, setUpdateMode, setUpdateTodoId } = useRootContext();
     const { session } = useSessionContext();
     const [loading, setLoading] = useState<boolean>(false);
+    const [loadingTodoId, setLoadingTodoId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!session) return;
@@ -56,6 +57,12 @@ const Todos = () => {
         );
     }
 
+    const handleToggleTodo = async (id: string) => {
+        if (loadingTodoId === id) return;
+        setLoadingTodoId(id);
+        await toggleTodo(id);
+        setLoadingTodoId(null);
+    }
 
 
     return (
@@ -66,16 +73,18 @@ const Todos = () => {
                     className={`group relative p-4 bg-amber-100 rounded-lg border border-amber-600 transition-all duration-200 ${todo.completed ? 'opacity-75' : ''}`}
                 >
                     <div className="flex items-start gap-3">
-                        <button
-                            onClick={() => toggleTodo(todo.todo_id)}
-                            className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center 
+                        {loadingTodoId === todo.todo_id ? <Spinner className="text-amber-600 size-5" /> : <>
+                            <button
+                                onClick={() => handleToggleTodo(todo.todo_id)}
+                                className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center 
                 border-2 ${todo.completed
-                                    ? 'bg-amber-500 border-amber-500 text-white'
-                                    : 'border-amber-300 hover:border-amber-400'}`}
-                            aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
-                        >
-                            {todo.completed && <Check size={12} />}
-                        </button>
+                                        ? 'bg-amber-500 border-amber-500 text-white'
+                                        : 'border-amber-300 hover:border-amber-400'}`}
+                                aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
+                            >
+                                {todo.completed && <Check size={12} />}
+                            </button>
+                        </>}
 
                         <div className="flex-1 min-w-0">
                             <h3
