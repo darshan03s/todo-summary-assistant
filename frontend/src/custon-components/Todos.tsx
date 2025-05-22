@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import supabaseClient from '@/supabaseClient';
 
 const Todos = () => {
-    const { todos, toggleTodo, deleteTodo, setTodos, setNewTodoText } = useRootContext();
+    const { todos, toggleTodo, deleteTodo, setTodos, setNewTodoText, setUpdateMode, setUpdateTodoId } = useRootContext();
     const { session } = useSessionContext();
 
     useEffect(() => {
@@ -61,6 +61,8 @@ const Todos = () => {
 
                         <button
                             onClick={() => {
+                                setUpdateMode(true);
+                                setUpdateTodoId(todo.todo_id);
                                 setNewTodoText(todo.title);
                             }}
                             className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 -mr-1 

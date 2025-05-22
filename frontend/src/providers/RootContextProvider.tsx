@@ -8,6 +8,8 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [todos, setTodos] = useState<Todo[]>([]);
     const { session } = useSessionContext();
     const [newTodoText, setNewTodoText] = useState<string>('');
+    const [updateMode, setUpdateMode] = useState<boolean>(false);
+    const [updateTodoId, setUpdateTodoId] = useState<string>('');
 
     const addTodo = (todo: Todo) => {
         if (!session) return;
@@ -47,18 +49,49 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
             });
     };
 
-    const updateTodo = (id: string, updatedTodo: Todo) => {
-        setTodos(todos.map((todo) => (todo.todo_id === id ? updatedTodo : todo)));
+    const updateTodo = () => {
+        if (!session) return;
+        supabaseClient
+            .from('user_todos')
+            .update({
+                title: newTodoText,
+            })
+            .eq('todo_id', updateTodoId)
+            .then(({ error }) => {
+                if (error) {
+                    console.error('Error updating todo:', error);
+                    return;
+                }
+                setTodos(todos.map(todo =>
+                    todo.todo_id === updateTodoId ? { ...todo, title: newTodoText } : todo
+                ));
+                setUpdateMode(false);
+                setUpdateTodoId('');
+                setNewTodoText('');
+            });
     };
 
     const toggleTodo = (id: string) => {
-        setTodos(todos.map(todo =>
-            todo.todo_id === id ? { ...todo, completed: !todo.completed } : todo
-        ));
+        if (!session) return;
+        supabaseClient
+            .from('user_todos')
+            .update({
+                completed: !todos.find((todo) => todo.todo_id === id)?.completed,
+            })
+            .eq('todo_id', id)
+            .then(({ error }) => {
+                if (error) {
+                    console.error('Error toggling todo:', error);
+                    return;
+                }
+                setTodos(todos.map(todo =>
+                    todo.todo_id === id ? { ...todo, completed: !todo.completed } : todo
+                ));
+            });
     };
 
     return (
-        <RootContext.Provider value={{ todos, setTodos, addTodo, deleteTodo, updateTodo, toggleTodo, newTodoText, setNewTodoText }}>
+        <RootContext.Provider value={{ todos, setTodos, addTodo, deleteTodo, updateTodo, toggleTodo, newTodoText, setNewTodoText, updateMode, setUpdateMode, updateTodoId, setUpdateTodoId }}>
             {children}
         </RootContext.Provider>
     );
