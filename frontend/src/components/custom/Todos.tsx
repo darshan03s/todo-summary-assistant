@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import type { Todo } from '@/types';
 import { useState } from 'react';
-import Spinner from './Spinner';
+import Spinner from '@/components/custom/Spinner';
 
 const Todos = () => {
     const { todos, toggleTodo, deleteTodo, setTodos, setNewTodoText, setUpdateMode, setUpdateTodoId } = useRootContext();

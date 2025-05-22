@@ -4,7 +4,7 @@ import { Link } from "react-router"
 import { useSessionContext } from "@/hooks/contextHooks"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut } from "lucide-react"
-import Spinner from "./Spinner"
+import Spinner from "@/components/custom/Spinner"
 import { useState } from "react"
 
 const Navbar = () => {

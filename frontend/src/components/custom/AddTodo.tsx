@@ -6,9 +6,9 @@ import { useRootContext, useSessionContext } from '@/hooks/contextHooks'
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from 'react'
-import Spinner from '@/custon-components/Spinner'
+import Spinner from '@/components/custom/Spinner'
 import { parseTodos, summarizeTodos } from '@/utils'
-import SentToSlackModal from './SentToSlackModal'
+import SentToSlackModal from '@/components/custom/SentToSlackModal'
 
 const AddTodo = () => {
     const { newTodoText, setNewTodoText, addTodo, updateMode, updateTodo, todos } = useRootContext();

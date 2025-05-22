@@ -1,5 +1,5 @@
-import AddTodo from "@/custon-components/AddTodo"
-import Todos from "@/custon-components/Todos"
+import AddTodo from "@/components/custom/AddTodo"
+import Todos from "@/components/custom/Todos"
 
 const Home = () => {
     return (
