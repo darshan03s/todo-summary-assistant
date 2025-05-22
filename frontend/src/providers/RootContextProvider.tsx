@@ -3,6 +3,7 @@ import { useState } from "react";
 import { RootContext } from "./contexts";
 import { useSessionContext } from "@/hooks/contextHooks";
 import { toast } from "sonner";
+import { TriangleAlert } from "lucide-react";
 
 const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [todos, setTodos] = useState<Todo[]>([]);
@@ -31,7 +32,7 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
         });
         if (!response.ok) {
             const errorData = await response.json();
-            toast(errorData.message || 'Failed to add todo from backend');
+            toast(errorData.message || 'Failed to add todo from backend', { duration: 5000, icon: <TriangleAlert size={20} /> });
         }
         const data: Todo = await response.json();
         if (data) {
@@ -58,7 +59,7 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
         });
         if (!response.ok) {
             const errorData = await response.json();
-            toast(errorData.message || 'Failed to delete todo from backend');
+            toast(errorData.message || 'Failed to delete todo from backend', { duration: 5000, icon: <TriangleAlert size={20} /> });
         }
         setTodos(todos.filter((todo) => todo.todo_id !== id));
     };
@@ -82,7 +83,7 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
         });
         if (!response.ok) {
             const errorData = await response.json();
-            toast(errorData.message || 'Failed to update todo from backend');
+            toast(errorData.message || 'Failed to update todo from backend', { duration: 5000, icon: <TriangleAlert size={20} /> });
         }
         setTodos(todos.map(todo =>
             todo.todo_id === updateTodoId ? { ...todo, title: newTodoText } : todo
@@ -110,7 +111,7 @@ const RootContextProvider = ({ children }: { children: React.ReactNode }) => {
         });
         if (!response.ok) {
             const errorData = await response.json();
-            toast(errorData.message || 'Failed to toggle todo from backend');
+            toast(errorData.message || 'Failed to toggle todo from backend', { duration: 5000, icon: <TriangleAlert size={20} /> });
         }
         setTodos(todos.map(todo =>
             todo.todo_id === id ? { ...todo, completed: !todo.completed } : todo

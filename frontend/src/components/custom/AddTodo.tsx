@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Edit, Plus, Send } from 'lucide-react'
+import { Edit, Plus, Send, TriangleAlert } from 'lucide-react'
 import { type Todo } from '@/types'
 import { useRootContext, useSessionContext } from '@/hooks/contextHooks'
 import { toast } from 'sonner'
@@ -21,7 +21,7 @@ const AddTodo = () => {
 
     const handleAddTodo = async () => {
         if (!session) {
-            toast("You must be logged in to add a todo!");
+            toast("You must be logged in to add a todo!", { duration: 5000, icon: <TriangleAlert size={20} /> });
             return;
         }
         if (newTodoText.trim() !== '') {
@@ -38,14 +38,14 @@ const AddTodo = () => {
 
     const handleSummarize = async () => {
         if (!session) {
-            toast("You must be logged in to summarize a todos!");
+            toast("You must be logged in to summarize todos!", { duration: 5000, icon: <TriangleAlert size={20} /> });
             return;
         }
         setLoadingSummarize(true);
         const allTodos: string = parseTodos(todos);
         const { summary, slackResponse } = await summarizeTodos(allTodos);
         if (slackResponse.error) {
-            toast(slackResponse.error, { duration: 5000 });
+            toast(slackResponse.error, { duration: 5000, icon: <TriangleAlert size={20} /> });
             setLoadingSummarize(false);
             return;
         }
@@ -56,7 +56,7 @@ const AddTodo = () => {
 
     const handleUpdateTodo = async () => {
         if (!session) {
-            toast("You must be logged in to update a todo!");
+            toast("You must be logged in to update a todo!", { duration: 5000, icon: <TriangleAlert size={20} /> });
             return;
         }
         setLoadingUpdateTodo(true);

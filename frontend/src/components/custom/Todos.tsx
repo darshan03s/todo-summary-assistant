@@ -1,4 +1,4 @@
-import { Check, Edit, Trash2 } from 'lucide-react';
+import { Check, Edit, Trash2, TriangleAlert } from 'lucide-react';
 import { useRootContext, useSessionContext } from '@/hooks/contextHooks';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -31,7 +31,7 @@ const Todos = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                toast(errorData.message || 'Failed to fetch todos from backend');
+                toast(errorData.message || 'Failed to fetch todos from backend', { duration: 5000, icon: <TriangleAlert size={20} /> });
             }
 
             const data: Todo[] = await response.json();

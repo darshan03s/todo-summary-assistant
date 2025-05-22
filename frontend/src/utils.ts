@@ -15,13 +15,18 @@ export const parseTodos = (todos: Todo[]): string => {
 };
 
 export const summarizeTodos = async (parsedTodosString: string): Promise<{ summary: string; slackResponse: SlackResponseType }> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/summarize`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ todos: parsedTodosString }),
-    });
-    const data: { summary: string; slackResponse: SlackResponseType } = await response.json();
-    return data;
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/summarize`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ todos: parsedTodosString }),
+        });
+        const data: { summary: string; slackResponse: SlackResponseType } = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+        return { summary: "", slackResponse: { error: "Failed to summarize todos", message: "Failed to summarize todos" } };
+    }
 };
