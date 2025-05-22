@@ -1,24 +1,51 @@
 import { Check, Edit, Trash2 } from 'lucide-react';
 import { useRootContext, useSessionContext } from '@/hooks/contextHooks';
 import { useEffect } from 'react';
-import supabaseClient from '@/supabaseClient';
+import { toast } from 'sonner';
+import type { Todo } from '@/types';
+import { useState } from 'react';
+import Spinner from './Spinner';
 
 const Todos = () => {
     const { todos, toggleTodo, deleteTodo, setTodos, setNewTodoText, setUpdateMode, setUpdateTodoId } = useRootContext();
     const { session } = useSessionContext();
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!session) return;
         const fetchTodos = async () => {
-            const { data, error } = await supabaseClient.from('user_todos').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
-            if (error) {
-                console.error('Error fetching todos:', error);
-            } else {
-                setTodos(data);
+            setLoading(true);
+            const accessToken = session?.access_token;
+            if (!accessToken) {
+                return;
             }
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/todos`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                toast(errorData.message || 'Failed to fetch todos from backend');
+            }
+
+            const data: Todo[] = await response.json();
+            setTodos(data);
+            setLoading(false);
         };
         fetchTodos();
     }, [session, setTodos]);
+
+    if (session && loading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <Spinner className="text-amber-600 size-8" />
+            </div>
+        );
+    }
 
     if (todos.length === 0 || !session) {
         return (
@@ -28,6 +55,7 @@ const Todos = () => {
             </div>
         );
     }
+
 
 
     return (
