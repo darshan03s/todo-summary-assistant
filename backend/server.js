@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { sendSlackMessage, summarizeTodos } from './utils.js';
 import { createClient } from '@supabase/supabase-js';
+import { writeFileSync, unlinkSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 dotenv.config();
 
@@ -11,10 +14,32 @@ const PORT = process.env.PORT || 3000;
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-if (!supabaseUrl || !supabaseServiceRoleKey || !slackWebhookUrl) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY or SLACK_WEBHOOK_URL in environment variables.');
+if (!supabaseUrl || !supabaseServiceRoleKey || !slackWebhookUrl || !process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY or SLACK_WEBHOOK_URL or GOOGLE_APPLICATION_CREDENTIALS_JSON in environment variables.');
     process.exit(1);
 }
+
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+    try {
+        const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+        const tempFilePath = join(tmpdir(), 'google-credentials.json');
+        writeFileSync(tempFilePath, JSON.stringify(credentials));
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = tempFilePath;
+
+        // Clean up the temp file when the process exits
+        process.on('exit', () => {
+            try {
+                unlinkSync(tempFilePath);
+            } catch (e) {
+                console.error('Error cleaning up temp credentials:', e);
+            }
+        });
+    } catch (error) {
+        console.error('Error setting up Google credentials:', error);
+    }
+}
+
+
 const supabaseBackend = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 app.use(cors());
