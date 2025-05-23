@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 3000;
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-if (!supabaseUrl || !supabaseServiceRoleKey || !slackWebhookUrl || !process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY or SLACK_WEBHOOK_URL or GOOGLE_APPLICATION_CREDENTIALS_JSON in environment variables.');
+if (!supabaseUrl || !supabaseServiceRoleKey || !slackWebhookUrl || !process.env.MISTRAL_API_KEY) {
+    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY or SLACK_WEBHOOK_URL or MISTRAL_API_KEY in environment variables.');
     process.exit(1);
 }
 
@@ -26,7 +26,6 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
         writeFileSync(tempFilePath, JSON.stringify(credentials));
         process.env.GOOGLE_APPLICATION_CREDENTIALS = tempFilePath;
 
-        // Clean up the temp file when the process exits
         process.on('exit', () => {
             try {
                 unlinkSync(tempFilePath);
